@@ -4,6 +4,7 @@ var inquirer = require("inquirer");
 var itemstock;
 var itemwant;
 var newstock;
+var total;
 // Create the connection information for the SQL database
 var connection = mysql.createConnection({
   host: "localhost",
@@ -27,11 +28,11 @@ function start() {
   // query the database for all items avaliable
   connection.query("SELECT * FROM products", function(err, results) {
     if (err) throw err;
-    console.log("\n \n---------- Inventory ---------- \n \n");
+    console.log(" \n---------- Inventory ---------- \n");
     for (var i = 0; i < results.length; i++) {
         console.log(results[i].item_id + "   " + results[i].price + "  " + results[i].product_name);
     };
-    console.log("\n \n");
+    console.log(" \n");
     // once you have the items, prompt the user for which they'd like to bid on
     inquirer
       .prompt([
@@ -64,6 +65,8 @@ function start() {
         itemstock = chosenItem.stock_quantity;
         itemwant = answer.quantity;
         newstock = itemstock - itemwant;
+        total = (itemwant) * chosenItem.price;
+
 
         // determine if bid was high enough
         if ( itemstock > itemwant ) {
@@ -80,7 +83,7 @@ function start() {
             ],
             function(err) {
               if (err) throw err;
-              console.log("Congrats! you just bought a " + chosenItem.product_name );
+              console.log("Congrats! you just bought a " + chosenItem.product_name + " for a total of " + total);
               setTimeout(function(){ start(); }, 5000);
             }
           );
